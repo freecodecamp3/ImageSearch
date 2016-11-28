@@ -65,15 +65,43 @@ require("http").createServer(function (request, response) {
 	response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
 	
 	var pathObj =  require('url').parse(request.url);
-	if (pathObj.pathname.indexOf('/api/latest/imagesearch') == 0) {
-		response.end('latest');
+	if (pathObj.pathname === '/') {
+		var doc = heredoc(function () {
+			/*
+			<!DOCTYPE html>
+			<html>
+				<head>
+					<meta charset="UTF-8">
+					<title>Timestamp microservice</title>
+					<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+				</head>
+				<body>
+					<div class="container">
+						<h3>Search:</h3>
+						<code>https://imagesearch123.herokuapp.com/api/imagesearch/keyword?offset=10</code>
+						<h3>Last:</h3>
+						<code>https://imagesearch123.herokuapp.com/api/latest/imagesearch/</code>
+					</div>
+				</body>
+			</html>
+			*/
+		});
+		response.end(doc);
+	} else if (pathObj.pathname === '/favicon.ico') {
+		response.end();
+	} else if (pathObj.pathname.indexOf('/api/latest/imagesearch') == 0) {
+		response.end(JSON.stringify(logs));
 	} else {
 		var arr = pathObj.pathname.match(/\/api\/imagesearch\/(.+)/);
 		if (arr && arr.length>=2) {
 			var params = require('querystring').parse(pathObj.query);
 			//console.log(pathObj.query, arr[1], params, params.offset);
 			var keyword = decodeURI(arr[1]);
-			logs.push({'term':keyword, when:});
+			
+			if (logs.length>10) {
+				logs.pop();
+			}
+			logs.push({'term':keyword, when:new Date()});
 			
 			outputSearch(keyword, params.offset)
 			.then(function(out) {
