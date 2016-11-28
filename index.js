@@ -66,8 +66,7 @@ require("http").createServer(function (request, response) {
 	
 	var pathObj =  require('url').parse(request.url);
 	if (pathObj.pathname === '/') {
-		var doc = heredoc(function () {
-			/*
+		var doc = heredoc(function () {/*
 			<!DOCTYPE html>
 			<html>
 				<head>
@@ -84,8 +83,7 @@ require("http").createServer(function (request, response) {
 					</div>
 				</body>
 			</html>
-			*/
-		});
+			*/});
 		response.end(doc);
 	} else if (pathObj.pathname === '/favicon.ico') {
 		response.end();
